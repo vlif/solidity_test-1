@@ -11,14 +11,15 @@ router.get('/', function(req, res, next) {
     var data = "";
 
     var user = "";
-    var user = req.query.address;
-    console.log("user");
+    var user = req.query.user;
     var filter = "";
     if (user) {
+	console.log("user");
+	console.log(user);
     	filter = 'WHERE address = ?';
     }
 
-    db.query('SELECT * FROM info' + filter,user, function(err, rows) {
+    db.query('SELECT * FROM info ' + filter,user, function(err, rows) {
         if (err) {
             console.log(err);
         }
