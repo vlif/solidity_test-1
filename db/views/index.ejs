@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <script>
+    function Edit(address) {
+        window.location.href = "/userEdit?address=" + address;
+    }
+    function Delete(address) {
+        var rs = confirm('Confirm to delete?');
+        if (rs) {
+            window.location.href = "/userDelete?address=" + address;
+        }
+    }
+     function Search() {
+        var address = document.getElementsByName('suserid')[0].value;
+        window.location.href = "/?address=" + userid;;
+    }
+    </script>  
+</head>
+  <body>
+    <h1><%= title %></h1>
+    <p>Welcome to <%= title %></p>
+	<div class="search">
+        <label>UserId：</label>
+        <input type="text" name="suserid" value="<%=user %>" placeholder="input the user_address">
+        <input type="button" name="sSearch" value="Search" onclick="Search();">
+    </div>
+<input type='submit' value='Add' onclick="javascript: location.href='add'">  
+<h1>Account - List</h1>
+	<table>
+        <tr>
+            <th>address</th>
+            <th>name</th>
+            <th>abi</th>
+            <th>contract</th>
+        </tr>
+        <% for ( var i = 0 ; i < data.length ; i++){ %>
+            <tr>
+                <td>
+                    <%= data[i].address  %>
+                </td>
+                <td>
+                    <%= data[i].name  %>
+                </td>
+                <td>
+                    <%= data[i].abi  %>
+                </td>
+                <td>
+                    <%= data[i].contract  %>
+                </td>
+		<td>
+　　		    <input type="button" name="edit" value="Edit" onclick="Edit('<%= data[i].address  %>');" />
+		</td>
+		<td>
+			<input type="button" name="delete" value="Delete" onclick="Delete('<%= data[i].address  %>');" />
+		</td>
+            </tr>
+            <% } %>
+    </table>
+</body>
+</html>
