@@ -1,5 +1,5 @@
 //npm install bignum
-
+// every ans need to add "0x" at the beginning
 bignum = require('bignum');
 function d2h(d) {return d.toString(16);}
 
@@ -55,7 +55,8 @@ function xorrelate()
     //console.log(q);
 
     // contract addresss turn address into bignumber
-    var s = h2d("0x0dcd2f752394c41875e259e00bb44fd505297caf");
+    var s = h2d("0x038f160ad632409bfb18582241d9fd88c1a072ba");
+
     // test relate address
     var u = h2d("0xca35b7d915458ef540ade6068dfe2f44e8fa733c");
 
@@ -79,37 +80,99 @@ function xorrelate()
     console.log(result);
 
     var ans = result.toString(base=16);
+    ans = "0x"+ans;
     console.log(ans);
 }
 
+// find the int where to store relate
 //xor tcfsh, con, relate0,relate1, num
 function xorint(num){
-    // var t = stringToHex("tcfshtcfshtcfshtcfsh");
+    var tcfsh = stringToHex("tcfshtcfshtcfshtcfsh");
     // contract addresss turn address into bignumber
-    var t = h2d("...");
-    var s = h2d("0x692a70d2e424a56d2c6c27aa97d1a86395877b3a");
+    var conaddr = h2d("0x038f160ad632409bfb18582241d9fd88c1a072ba");
     // test relate address
-    var u = h2d("0xca35b7d915458ef540ade6068dfe2f44e8fa733c");
+    var relate0 = h2d("0xca35b7d915458ef540ade6068dfe2f44e8fa733c");
+    // relate1 address
+    var relate1 = h2d("0x14723a09acff6d2a60dcdf7aa4aff308fddc160c");
+
+    var dectcfsh = h2d(tcfsh);
     
-    var r = h2d(t);
-    
-    var big1 = bignum(s,base=10);
+    var big1 = bignum(conaddr,base=10);
     //console.log(big1);
 
-    var big2 = bignum(u,base=10);
+    var big2 = bignum(relate0,base=10);
    // console.log(big2);
 
-    var big3 = bignum(r,base=10);
+    var big3 = bignum(dectcfsh,base=10);
   //  console.log(big3);
 
     var big4 = bignum(num,base=10);
     console.log(big4);
-    console.log(big4.toString(base=16));
+    
+    var big5 = bignum(relate1,base=10);
+    
     var ans = big1.xor(big2);
     ans = ans.xor(big3);
     ans = ans.xor(big4);
+    ans = ans.xor(big5);
     var result = ans.toString(base=16);
+    result = "0x"+result;
     console.log(result);
 }
-//0x385f712a1f4824d8ff91a08680da6f2bb6ce4bfa
-xorint(53);
+
+function xorurl(str){
+    var hash = h2d(str);
+    var big1 = bignum(hash,base=10);
+
+    //config time
+    var big2 = bignum(1502075203,base=10);
+
+    var t = stringToHex("nchcnchcnchcnchcnchc");
+    var r =h2d(t);
+    var big3 = bignum(r,base=10);
+    
+    var u = h2d("0xef55bfac4228981e850936aaf042951f7b146e41");
+    var big4 =bignum(u,base=10);
+
+    var ans = big1.xor(big2);   //time
+    ans = ans.xor(big3);        //nchc
+    ans = ans.xor(big4);        //conaddr
+
+    console.log(ans)
+}
+//contractaddr, nchc*8
+function xorsign(){
+    var r = h2d("0xe59a2207d46696913cd87c71b7680650e95f7067798bdf3b6a4d6d294da192de");
+    var s = h2d("0x59bb6310767c8a010df3e83e714e75849db535c4da332449e766f46ef00c2b09");
+    //0xe59a2207d46696913cd87c716a8d760c1344a0ae335c555397895698582801b2
+    //0x59bb6310767c8a010df3e83eacab05d867aee50d90e4ae211aa2cfdfe585b865
+    var hexnchc = stringToHex("nchcnchcnchcnchcnchcnchcnchcnchc");
+    var nchc = h2d(hexnchc);
+
+    //contract address only have 20 bytes padding to bytes32
+    var tmpcon = "0x0000000000000000000000000dcb77b866fe07451e8f89871edb27b27af9f2afc"
+    var conaddr = h2d(tmpcon);
+    var bigs = bignum(s,base=10);
+    var bigr = bignum(r,base=10);
+
+    var bignchc = bignum(nchc,base=10);
+    var bigcon = bignum(conaddr,base=10);
+
+    var ansr = bigr.xor(bignchc);
+    ansr = ansr.xor(bigcon);
+    var resultr = ansr.toString(16);
+    resultr = "0x"+resultr;
+    console.log(resultr);
+
+    var anss = bigs.xor(bignchc);
+    anss = anss.xor(bigcon);
+    var results = anss.toString(16);
+    results = "0x"+results;
+    console.log(results);
+}
+//test(a9abfda907fcc022a801153d0efb49b0b7e064d7)  decode
+//test(a7d9c9b0ad14a60dd5d6d647a244baaf473969e5) first relate
+//test(799e446014ae45d2f5a7ef3b8b1566e3521f0cd5) 2 relate
+//xorrelate();
+//xorint(53);
+xorsign();
