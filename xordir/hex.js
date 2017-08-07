@@ -37,7 +37,7 @@ function h2d(s) {
     return dec;
 }
 
-//xor relate address 
+//first step: init relation: xor relate address 
 //xor con,relate,nchc
 function xorrelate()
 {
@@ -84,7 +84,7 @@ function xorrelate()
     console.log(ans);
 }
 
-// find the int where to store relate
+//init: find the int where to store relate
 //xor tcfsh, con, relate0,relate1, num
 function xorint(num){
     var tcfsh = stringToHex("tcfshtcfshtcfshtcfsh");
@@ -120,27 +120,9 @@ function xorint(num){
     console.log(result);
 }
 
-function xorurl(str){
-    var hash = h2d(str);
-    var big1 = bignum(hash,base=10);
+//teacher's signature : Xor to smart contract(security)
+//Xor(contractaddr, nchc*8,r)
 
-    //config time
-    var big2 = bignum(1502075203,base=10);
-
-    var t = stringToHex("nchcnchcnchcnchcnchc");
-    var r =h2d(t);
-    var big3 = bignum(r,base=10);
-    
-    var u = h2d("0xef55bfac4228981e850936aaf042951f7b146e41");
-    var big4 =bignum(u,base=10);
-
-    var ans = big1.xor(big2);   //time
-    ans = ans.xor(big3);        //nchc
-    ans = ans.xor(big4);        //conaddr
-
-    console.log(ans)
-}
-//contractaddr, nchc*8
 function xorsign(){
     var r = h2d("0xe59a2207d46696913cd87c71b7680650e95f7067798bdf3b6a4d6d294da192de");
     var s = h2d("0x59bb6310767c8a010df3e83e714e75849db535c4da332449e766f46ef00c2b09");
@@ -150,7 +132,7 @@ function xorsign(){
     var nchc = h2d(hexnchc);
 
     //contract address only have 20 bytes padding to bytes32
-    var tmpcon = "0x0000000000000000000000000dcb77b866fe07451e8f89871edb27b27af9f2afc"
+    var tmpcon = "0x0000000000000000000000000692a70d2e424a56d2c6c27aa97d1a86395877b3a"
     var conaddr = h2d(tmpcon);
     var bigs = bignum(s,base=10);
     var bigr = bignum(r,base=10);
@@ -170,9 +152,41 @@ function xorsign(){
     results = "0x"+results;
     console.log(results);
 }
+
+//send event message when check url triggered
+//Xor(conaddr, time ,input ,nchc)
+// instruct ways to convert string to hex
+function updateurl(str){
+   /*var tmp = "0x"+str;
+     var test = h2d(tmp);
+   */ 
+    var input = h2d("0xb267ff194e1ba09cb16b0502e37cfe785bbf2f0b");
+    console.log(test);
+    console.log(input);
+    var big1 = bignum(input,base=10);
+    console.log(big1);
+
+    var big2 = bignum(1502094665,base=10);  //time
+    console.log(big2);
+
+    var conaddr = h2d("0xdc04977a2078c8ffdf086d618d1f961b6c546222");
+    var big3 = bignum(conaddr,base=10);
+    console.log(big3);
+
+    var t = stringToHex("nchcnchcnchcnchcnchc");
+    var r =h2d(t);
+    var big4 = bignum(r,base=10);
+    console.log(big4);
+
+    var result = big1.xor(big2);
+    result = result.xor(big3);
+    result = result.xor(big4);
+    console.log(result);
+}
 //test(a9abfda907fcc022a801153d0efb49b0b7e064d7)  decode
 //test(a7d9c9b0ad14a60dd5d6d647a244baaf473969e5) first relate
 //test(799e446014ae45d2f5a7ef3b8b1566e3521f0cd5) 2 relate
 //xorrelate();
 //xorint(53);
-xorsign();
+//xorsign();
+updateurl("b267ff194e1ba09cb16b0502e37cfe785bbf2f0b");
