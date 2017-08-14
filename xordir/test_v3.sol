@@ -4,7 +4,8 @@
 // 5. after get url from web send event => graduate(encrypted)
 // problem 1:students set his own relate address?
 // problem 2:input json should xor back and hash
-
+//  problem3 : msg.sender = 教網中心
+// problem 4: init send json
 pragma solidity ^0.4.10;
 contract SimpleOracle {
     // 增加owner
@@ -30,16 +31,16 @@ contract SimpleOracle {
         _;
     }
     
-    event upload(bytes _query);
+    event upload(address sender);       //verified event to let web server know
 
     // 設定responder，並限定owner才能使用
     function setResponder(address _responder) external onlyOwner {
         responder = _responder;
     }
     
-    function query(bytes _query) external returns (uint256) {
-        uint256 id = uint256(sha3(block.number, now, _query, msg.sender));
-        upload(_query);
+    function query(address sender) external returns (uint256) {
+        uint256 id = uint256(sha3(block.number, now, sender, msg.sender));
+        upload(sender);
         return id;
     }
     
@@ -81,15 +82,13 @@ contract Oracle_update {
 }
 contract test{
        address user;    //student
-       uint time;
-       
+       string json;
+      
        //if signature collected upload event
-       event upload(bytes32 hash,address conaddr,uint time);
-       
        struct diploma{
-           bool ok;         //diploma uploaded
            bool[2] verified;
            address[2] relate;
+           bytes32 hashjson;
        }
        mapping(uint => diploma) Diploma;
     
@@ -99,63 +98,107 @@ contract test{
    }
    
    
-   // real init add user
+   // don't need return
    // address don't need to transform to bytes20(xoraddr0,xoraddr1)
-   function init(bytes20 decode,bytes20 xoraddr0,bytes20 xoraddr1) {
-        address addr0 = xorrelate(xoraddr0);
-        address addr1 = xorrelate(xoraddr1);
-        uint i = xorint(decode,bytes20(addr0),bytes20(addr1));
+   function init(bytes20 decode,bytes20 xoraddr0,bytes20 xoraddr1) returns(address,uint,address,address){
+        uint i = xorint(decode);
+        address addr0 = xorrelate(0,xoraddr0);
+        address addr1 = xorrelate(1,xoraddr1);
         //store hash
         Diploma[i].relate[0] = address(xoraddr0);
         Diploma[i].relate[1] = address(xoraddr1);
         Diploma[i].verified[0]=false;
         Diploma[i].verified[1]=false;
+        return (this,i,addr0,addr1);
    }
    //decode sending address
    
-   //get i xor(tcfsh relate0 relate1 con)
-   function xorint(bytes20 num,bytes20 relate0,bytes20 relate1) returns(uint){
-        bytes20 str = bytes20("tcfshtcfshtcfshtcfsh");
+   //get i xor(sha3(idolmaster), con)
+   function xorint(bytes20 num) returns(uint){
+        bytes20 str = bytes20(sha3("idolmaster"));
         address con =this;
-        return uint(str^bytes20(con)^relate0^num^relate1);
+        return uint(str^bytes20(con)^num);
     }
     
     //nchc^relate^contract used in getting init
-    function xorrelate(bytes20 relate) returns(address ans){
+    function xorrelate(uint num,bytes20 relate) returns(address ans){
          address con = this;
-         bytes20 str = bytes20("nchcnchcnchcnchcnchc");
-         ans =  address((bytes20(con)^str^relate));
+         bytes20 str;
+         if(num == 0){
+            str= bytes20(sha3("nchc"));
+            ans =  address((bytes20(con)^str^relate));
+         }
+         if(num == 1){
+            str= bytes20(sha3("nchc1"));
+            ans =  address((bytes20(con)^str^relate));
+         }        
     }
     
    // verify signature verify = msg.sender  ?
    // num and who should xor?
-   function verify(bytes20 hexnum,bytes32 hash,uint8 v,bytes32 xorr,bytes32 xors) returns(address){
+   function verify(bytes20 numhex,bytes32 hash,uint8 v,bytes32 xorr,bytes32 xors){
+        uint num = xorint(numhex);
         uint who=10;
         bytes32 r =xorsign(xorr);
         bytes32 s =xorsign(xors);
-        address addr0 = xorrelate(bytes20(Diploma[num].relate[0]));
-        address addr1 = xorrelate(bytes20(Diploma[num].relate[1]));
-        uint num = xorint(hexnum,bytes20(addr0),bytes20(addr1));
-        
         bytes memory prefix = "\x19Ethereum Signed Message:\n32";
         bytes32 prefixedHash = sha3(prefix, hash);
         address tmp = ecrecover(prefixedHash, v, r, s);
-        if(tmp == Diploma[num].relate[0]) who=0;
-        if(tmp == Diploma[num].relate[1]) who=1;
-        if(Diploma[num].relate[who] != tmp || Diploma[num].verified[who] == true||who ==10){
-            throw;
+        address addr0 = xorrelate(0,bytes20(Diploma[num].relate[0]));
+        if(tmp == addr0) who=0;
+        else{
+            addr0 = xorrelate(1,bytes20(Diploma[num].relate[1]));
+            if(tmp == addr0) who=1;
         }
+        //if(Diploma[num].relate[who] != tmp || Diploma[num].verified[who] == true||who ==10){
+        //    throw;
+    //    }
         Diploma[num].verified[who] = true;
         if(Diploma[num].verified[0] == true && Diploma[num].verified[1] == true){
             //upload(Xor(num),this,num);
         }
+      //  return (addr0);
     }
     
-    //unxor sign
+    //unxor sign(r,s)
     function xorsign(bytes32 xorr) returns(bytes32 r){
         address con = this;
         bytes32 str="nchcnchcnchcnchcnchcnchcnchcnchc";
         r = bytes32(con)^str^xorr;
+    }
+    
+    function trace(bytes20 hexnum) returns(bool,bool){
+        uint num=xorint(hexnum);
+        return(Diploma[num].verified[0],Diploma[num].verified[1]);
+    }
+    // concate string
+    function bytes32ArrayToString (bytes32[] data) returns (string) {
+    bytes memory bytesString = new bytes(data.length * 32);
+    uint urlLength;
+    for (uint i=0; i<data.length; i++) {
+        for (uint j=0; j<32; j++) {
+            byte char = byte(bytes32(uint(data[i]) * 2 ** (8 * j)));
+            if (char != 0) {
+                bytesString[urlLength] = char;
+                urlLength += 1;
+            }
+        }
+    }
+        bytes memory bytesStringTrimmed = new bytes(urlLength);
+        for (i=0; i<urlLength; i++) {
+            bytesStringTrimmed[i] = bytesString[i];
+        }
+        return string(bytesStringTrimmed);
+    }
+    input json and hash
+    function setjson(bytes32[] a) returns(bytes32){
+        return(sha3(bytes32ArrayToString(a)));
+    }
+    //student give a string^ conaddr^nchc
+    // return num test
+    function getjson(bytes20 hexnum) returns(bytes32){
+        uint num = xorint(hexnum);
+        return (Diploma[num].hashjson);
     }
  }
  

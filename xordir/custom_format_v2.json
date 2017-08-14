@@ -1,0 +1,36 @@
+{
+  "id": "",
+  "mapping": "",
+  "cert": "data:application/pdf;base64,",
+  "timestamp": "",
+  "signSchool": {
+    "publicKey": "",
+    "signature": ""
+  },
+  "signDepartment": {
+    "publicKey": "",
+    "signature": ""
+  },
+  "signTeacher": [
+    {
+      "publicKey": "",
+      "signature": ""
+    },
+    {
+      "publicKey": "",
+      "signature": ""
+    },
+    {
+      "publicKey": "",
+      "signature": ""
+    },
+    {
+      "publicKey": "",
+      "signature": ""
+    },
+    {
+      "publicKey": "",
+      "signature": ""
+    }
+  ]
+}
