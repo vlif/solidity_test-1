@@ -68,7 +68,7 @@ contract Oracle_update {
         _;
     }
 
-    function query() returns (bytes32 id) {
+    function query(address sender) returns (bytes32 id) {
         id = sha3(block.number, now, msg.sender);
         upload(msg.sender);
         return id;
@@ -82,15 +82,15 @@ contract test{
        string json;
        bytes32 shanchc;
 
-       Oracle_update Oracle = Oracle_update(); //oracle address config
        //if signature collected upload event
        struct diploma{
-           bool[2] verified;
-           address[2] relate;
+           uint CNT;
+           bool[] verified;
+           address[] relate;
            bytes32 hashjson;
        }
        mapping(uint => diploma) Diploma;
-    
+    Oracle_update Oracle = Oracle_update();	//config
    // user = msg.sender !!!
    function test(address super){
        user = msg.sender;
@@ -101,14 +101,15 @@ contract test{
    
    // don't need return,calculate addr0 addr1
    // address don't need to transform to bytes20(xoraddr0,xoraddr1)
-   function init(bytes20 decode,bytes20 xoraddr0,bytes20 xoraddr1){
+   function init(bytes20 decode,bytes20[] xoraddr){
         if(msg.sender != admin){throw;}
         uint i = xorint(decode);
         //store hash
-        Diploma[i].relate[0] = address(xoraddr0);
-        Diploma[i].relate[1] = address(xoraddr1);
-        Diploma[i].verified[0]=false;
-        Diploma[i].verified[1]=false;
+        for(uint j = 0 ;j<xoraddr.length;j++){
+            Diploma[i].relate[j] = address(xoraddr[j]);
+            Diploma[i].verified[j]=false;
+        }
+        Diploma[i].CNT = 0;
    }
    //decode sending address
    
@@ -135,30 +136,23 @@ contract test{
     
    // verify signature verify = msg.sender  ?
    // num and who should xor?
-   function verify(bytes20 numhex,bytes32 hash,uint8 v,bytes32 xorr,bytes32 xors){
+   function verify(bytes20 numhex,bytes20 ihex,bytes32 hash,uint8 v,bytes32 xorr,bytes32 xors){
         if(msg.sender != admin){throw;}
         uint num = xorint(numhex);
-        uint who=10;
         bytes32 r =xorsign(xorr);
         bytes32 s =xorsign(xors);
         
         bytes memory prefix = "\x19Ethereum Signed Message:\n32";
         bytes32 prefixedHash = sha3(prefix, hash);
         address tmp = ecrecover(prefixedHash, v, r, s);
+        uint order = xorint(ihex);
         
-        address addr0 = xorrelate(0,bytes20(Diploma[num].relate[0]));
-        if(tmp == addr0) who=0;
-        else{
-            addr0 = xorrelate(1,bytes20(Diploma[num].relate[1]));
-            if(tmp == addr0) who=1;
-        }
-        
-        if(who ==10 || Diploma[num].verified[who] == true){
-            throw;
-        }
-        Diploma[num].verified[who] = true;
-        if(Diploma[num].verified[0] == true && Diploma[num].verified[1] == true){
-            Oracle.query();
+        address addr0 = xorrelate(order%2,bytes20(Diploma[num].relate[order]));
+        if(tmp != addr0 || Diploma[num].verified[order] == true){throw;}
+
+        Diploma[num].verified[order] = true;Diploma[num].CNT++;
+        if(Diploma[num].CNT == 2){
+            Oracle.query(msg.sender);
         }
     }
     
@@ -169,9 +163,9 @@ contract test{
         r = bytes32(con)^str^xorr;
     }
     
-    function trace(bytes20 hexnum) returns(bool,bool){
+    function trace(bytes20 hexnum) returns(bool[]){
         uint num=xorint(hexnum);
-        return(Diploma[num].verified[0],Diploma[num].verified[1]);
+        return(Diploma[num].verified);
     }
     
     function bytes32ArrayToString (bytes32[] data) returns (string) {
