@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Blockchain Academic Ceritification System</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  function newSite() {
+    document.getElementById('myIframe').src=document.getElementById('myIframe').innerHTML;
+  }    
+  </script>
+ <style type="text/css">
+  body{
+    background-color:#DCDCDC;
+  }
+  #info{
+    height:50px;
+    position:relative;
+    top:10%;
+    left:10%;
+    width:30%;
+  }
+  #pdf{
+    position:relative;
+    display:inline;
+    left:50%;
+    border: 1px groove black;
+  }   
+  .navbar{
+    left: 10%;
+    width :80%;
+  }
+  .navbar-right{
+    right:20%;
+  }
+  hr{
+  /*border-top-width: 1px */
+  /*border-top-style: inset */
+  border: 1px solid #ccc;
+  }
+
+  .user{
+    font-size:20px;
+    color:#4400B3;
+    font-family:Serif ;
+  }
+  #verified{
+    color:green;font-weight:bold;font-size:30px;font-family:Serif;
+  }
+</style>
+</head>
+
+<body style="height:500px" onload="newSite()">
+<br>
+<nav class="navbar navbar-inverse">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">畢業證書驗證系統</a>
+    </div>
+    <ul class="nav navbar-nav">
+      <li><a href="https://www.csie.ntu.edu.tw/~b04902092" target="_blank">Home</a></li>
+      <li><a href="#">About</a></li>
+    </ul>
+    <ul class="nav navbar-nav navbar-right">
+        <!-- <li><a href="https:/www.csie.ntu.edu.tw/~b04902092" target="_blank">開發者介紹</a></li> -->
+        <!-- <li><a href="https://www.csie.ntu.edu.tw/~b04902092/music.htm" target="_blank">開發者的歌</a></li> -->
+    </ul>
+  </div>
+</nav>
+<div id="info">
+<span id="verified">QR Code Corresponding Cert</span>
+<hr>  
+<span class="user">Username</span>&nbsp&nbsp&nbsp&nbsp &nbsp&nbsp<span><%= user  %></span>
+<hr> 
+<span class="user">Diploma</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<span><%= name  %></span>
+<hr>
+<span class="user">timestamp</span>&nbsp&nbsp&nbsp&nbsp &nbsp&nbsp<span><%= timestamp  %></span>
+<hr>
+</div>
+<div id="pdf">
+<iframe id="myIframe" src="" width="400px" height="400px"><%= iurl %></iframe>
+</div>
+</body>
+</html>

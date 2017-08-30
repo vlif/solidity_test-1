@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>createJSON</title>
+ <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+  <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script> -->
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+ <style type="text/css">
+  body{
+    background-color:#DCDCDC;
+  }
+  .navbar-fixed {
+    left: 10%; /* just an estimate of your sidebar's width */
+    /*width: calc(100% - 300px);*/
+    width :80%;
+  }
+  .inputJSON{
+    position:relative;
+    left:10%;
+    top:50px;
+  }
+ </style>
+</head>
+<body width="500px">
+<br>
+<nav class="navbar navbar-inverse navbar-fixed">
+  <div class="container">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">畢業證書驗證系統</a>
+    </div>
+    <ul class="nav navbar-nav">
+      <li><a href="https://www.csie.ntu.edu.tw/~b04902092" target="_blank">Home</a></li>
+      <li><a href="#">About</a></li>
+    </ul>
+  </div>
+</nav>
+<div class="inputJSON">
+          <div>
+            <label>contract Address:</label>
+            <input type="text" id="conaddr" placeholder="contract_address"></input>
+          </div>
+          <div>
+            <label>name:</label>
+            <input type="text" id="name" placeholder="name" />
+        </div>
+        <div>
+            <label>diploma_name :</label>
+            <input type="text" id="dname" placeholder="diploma_name">
+        </div>
+        <div>
+            <label>upload_time:</label>
+            <input type="text" id="utime" placeholder="upload_time">
+        </div>
+
+        <div>
+          <label>upload_file:</label>
+            <input id="cert" type="file">
+        </div>
+    <button onclick="convertToBase64()">download</button>
+</div>
+
+<script type="text/javascript">
+
+var object = {
+  "version":"1.0.0",
+  "address":"",
+  "name":"",
+  "diploma":"",
+  "uploadt":"",
+  "mapping":"",
+  "revocation":"",
+  "cert":"",
+  "timestamp":"",
+  "signSchool":{
+    "publicKey":"",
+    "signature":""
+  },
+  "signDepartment":{
+    "publicKey":"",
+    "signature":""
+  },
+  "signTeacher":[
+    {
+      "publicKey":"",
+      "signature":""
+    },
+    {
+      "publicKey":"",
+      "signature":""
+    },
+    {
+      "publicKey":"",
+      "signature":""
+    },
+    {
+      "publicKey":"",
+      "signature":""
+    },
+    {
+      "publicKey":"",
+      "signature":""
+    }
+  ]
+}
+var ans;
+function convertToBase64() {
+    var name=document.getElementById("name");
+    var dname=document.getElementById("dname");
+    var utime=document.getElementById("utime");
+    var addr = document.getElementById("conaddr");
+    console.log("data:",name.value,dname.value,utime.value);
+    object.name=name.value;
+    object.diploma=dname.value;
+    object.uploadt=utime.value;
+    object.address=addr.value;
+    //Read File
+    var selectedFile = document.getElementById("cert").files;
+    console.log("file:",selectedFile);
+    //Check File is not Empty
+    if (selectedFile.length > 0) {
+        // Select the very first file from list
+        var fileToLoad = selectedFile[0];
+        console.log("filetoload=",fileToLoad);
+        // FileReader function for read the file.
+        var fileReader = new FileReader();
+        var base64;
+        // Onload of file read the file content
+        fileReader.onload = function(fileLoadedEvent) {
+            base64 = fileLoadedEvent.target.result;
+            // Print data in console
+            // console.log("base64:",base64);
+            object.cert = base64;
+            // console.log(object);
+           // ans = JSON.stringify(object);     //save variable not used
+          /* download file */
+          var getjson = document.createElement('a');
+          var dataStr = "data:text/json;charset=utf-8," + JSON.stringify(object);
+          getjson.setAttribute("href",     dataStr     );
+          getjson.setAttribute("download", "test.json");
+          getjson.click();
+            // console.log("ans=",ans);
+            /* finish download file */
+        };
+        console.log("object:",object);
+        // Convert data to base64
+        fileReader.readAsDataURL(fileToLoad);
+        location.replace("/upload")
+        // console.log("filetoload",fileToLoad);
+        // console.log()
+    }
+}
+
+// function down() {
+//   var getjson = document.createElement('a');
+//   var dataStr = "data:text/json;charset=utf-8," + ans;
+//   getjson.setAttribute("href",     dataStr     );
+//   getjson.setAttribute("download", "test.json");
+//   getjson.click();
+//     // var getjson = document.createElement('a');
+//     // document.getElementById("dis").innerText = ans;
+//  //  console.log("dis =",document.getElementById("dis").innerText);
+//     // getjson.setAttribute('href',ans);
+//     // getjson.setAttribute('download',"test.json");
+//     // document.body.appendChild(getjson);
+
+//  //      getjson.click();
+
+//  //      document.body.removeChild(getjson);
+// }
+</script>
+
+</body>
+</html>

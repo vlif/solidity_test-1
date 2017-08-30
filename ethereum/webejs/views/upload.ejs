@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="APP">
+<head>
+    <title>JSON file upload</title>
+    <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+  <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script> -->
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+ <style type="text/css">
+ 	body{
+ 		background-color:#DCDCDC;
+ 	}
+ 	.navbar-fixed {
+  	left: 10%; /* just an estimate of your sidebar's width */
+  	/*width: calc(100% - 300px);*/
+  	width :80%;
+	}
+	.jsonin{
+		position:relative;
+		left:10%;
+		top:50px;
+	}
+ </style>
+</head>
+
+<body>
+<br>
+<nav class="navbar navbar-inverse navbar-fixed">
+  <div class="container">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">畢業證書驗證系統</a>
+    </div>
+    <ul class="nav navbar-nav">
+      <li><a href="https://www.csie.ntu.edu.tw/~b04902092/" target="_blank">Home</a></li>
+      <li><a href="#">About</a></li>
+    </ul>
+  </div>
+</nav>
+	<div class="jsonin">
+    <form method='post' action='uploadjson' enctype="multipart/form-data">
+    <input type='file' name='fileUploaded'>
+    <input type='submit'>
+    </div>
+ </body>
+</html>

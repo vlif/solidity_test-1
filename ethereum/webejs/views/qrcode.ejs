@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>QRCODE</title>
+	 <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+  <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script> -->
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+ 
+ <style type="text/css">
+ 	body{
+ 		background-color:#DCDCDC;
+ 	}
+ 	.navbar-fixed {
+  	left: 10%; /* just an estimate of your sidebar's width */
+  	/*width: calc(100% - 300px);*/
+  	width :80%;
+	}
+	#imgadd{
+		position: relative;
+		top:50px;
+		left:10%;
+	}
+	h2{
+		position:relative;
+		color:blue;
+		left:10%;
+	}
+ </style>
+ 
+ <script type="text/javascript">
+     function qrcodeadd() {
+ 	 	// console.log("innerHTML=",document.getElementById('imgadd').innerHTML);
+    document.getElementById('imgadd').src=document.getElementById('tmp').innerText;
+    console.log("imgloc=",document.getElementById('tmp').innerText);
+    document.getElementById('tmp').innerText="";
+    // document.getElementById('imgadd').innerHTML="";
+  };    
+ </script>
+
+</head>
+<body width="500px" onload="qrcodeadd()">
+<br>
+<nav class="navbar navbar-inverse navbar-fixed">
+  <div class="container">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">畢業證書驗證系統</a>
+    </div>
+    <ul class="nav navbar-nav">
+      <li><a href="/create" target="_blank">Home</a></li>
+      <li><a href="https://www.csie.ntu.edu.tw/~b04902092" target="_blank">About</a></li>
+    </ul>
+  </div>
+</nav>
+<h2>your qrcode:</h2>
+<span id="tmp"><%= imgloc %></span>
+<img id="imgadd" src="">
+</body>
+</html>
